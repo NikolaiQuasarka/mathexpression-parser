@@ -1,11 +1,14 @@
 use regex::Regex;
 
 pub struct ExpressionTokenizer {
+    /// Store expression string
     expression: String,
+    /// Store regex. Needed for lifetime solving
+    regex: Regex,
 }
 
 #[derive(Debug, PartialEq)]
-enum Token {
+pub enum Token {
     LeftBracket,
     RightBracket,
     Delimiter,
@@ -15,7 +18,7 @@ enum Token {
 }
 
 #[derive(Debug, PartialEq)]
-enum OperatorType {
+pub enum OperatorType {
     Add,
     Sub,
     Mul,
@@ -24,10 +27,13 @@ enum OperatorType {
 }
 
 impl ExpressionTokenizer {
+    // Create new instance
     pub fn from(expression: String) -> Self {
-        Self { expression }
+        let regex = Regex::new(&Self::create_regex_string()).unwrap();
+        Self { expression, regex }
     }
 
+    //Create valid regex string
     fn create_regex_string() -> String {
         let regex_arr = [
             r"(?P<left_bracket>\()",
@@ -43,12 +49,16 @@ impl ExpressionTokenizer {
         regex
     }
 
-    pub fn tokenize(self) -> Vec<String> {
-        unimplemented!()
+    //Split string from struct to tokens
+    pub fn tokenize(&self) -> impl Iterator<Item = Token> {
+        self.regex
+            .find_iter(&self.expression)
+            .map(|matched_str| Token::from(matched_str.as_str()))
     }
 }
 
 impl Token {
+    /// Create new instance from the str
     fn from(str: &str) -> Self {
         match str {
             "(" => Self::LeftBracket,
@@ -83,6 +93,27 @@ mod tests {
         dbg!(&regex);
 
         assert!(regex.is_ok())
+    }
+
+    #[test]
+    fn tokenize_test() {
+        let strings_and_expects = [(
+            "3+3*(83)",
+            [
+                Token::Number(3.0),
+                Token::Operator(OperatorType::Add),
+                Token::Number(3.0),
+                Token::Operator(OperatorType::Mul),
+                Token::LeftBracket,
+                Token::Number(83.0),
+                Token::RightBracket,
+            ],
+        )];
+
+        for (string, expect) in strings_and_expects {
+            let tokenizer = ExpressionTokenizer::from(string.to_string());
+            assert_eq!(tokenizer.tokenize().collect::<Vec<_>>(), expect);
+        }
     }
 
     #[test]
