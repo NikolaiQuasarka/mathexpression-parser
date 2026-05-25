@@ -55,6 +55,16 @@ impl ExpressionTokenizer {
             .find_iter(&self.expression)
             .map(|matched_str| Token::from(matched_str.as_str()))
     }
+
+    /// Tokenize and return either Ok with valid tokens for parser or an error
+    pub fn tokenize_with_check(&self) -> Result<Vec<Token>, ()> {
+        self.tokenize()
+            .map(|token| match token {
+                Token::Other => Err(()),
+                token @ _ => Ok(token),
+            })
+            .collect::<Result<Vec<_>, _>>()
+    }
 }
 
 impl Token {
