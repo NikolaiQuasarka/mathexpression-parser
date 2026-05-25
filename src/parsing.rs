@@ -49,8 +49,8 @@ impl ExpressionTokenizer {
         regex
     }
 
-    //Split string from struct to tokens
-    pub fn tokenize(&self) -> impl Iterator<Item = Token> {
+    /// Split string from struct to tokens
+    fn tokenize(&self) -> impl Iterator<Item = Token> {
         self.regex
             .find_iter(&self.expression)
             .map(|matched_str| Token::from(matched_str.as_str()))
