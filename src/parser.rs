@@ -14,16 +14,16 @@ fn get_precedence(token: &Token) -> u8 {
 }
 
 #[derive(Debug, PartialEq)]
-enum Expression {
+enum Expr {
     Number(f64),
     Unary {
         op: UnaryOp,
-        right: Box<Expression>,
+        right: Box<Expr>,
     },
     Binary {
-        left: Box<Expression>,
+        left: Box<Expr>,
         op: BinaryOp,
-        right: Box<Expression>,
+        right: Box<Expr>,
     },
 }
 
@@ -79,7 +79,7 @@ impl Parser {
         unimplemented!()
     }
 
-    pub fn parse(&mut self) -> Expression {
+    pub fn parse(&mut self) -> Expr {
         unimplemented!()
     }
 
@@ -98,10 +98,10 @@ mod tests {
     fn parse() {
         let strings_and_expectations = [(
             "3+2",
-            Expression::Binary {
-                left: Box::new(Expression::Number(3.0)),
+            Expr::Binary {
+                left: Box::new(Expr::Number(3.0)),
                 op: BinaryOp::Add,
-                right: Box::new(Expression::Number(2.0)),
+                right: Box::new(Expr::Number(2.0)),
             },
         )];
 
