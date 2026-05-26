@@ -96,14 +96,32 @@ mod tests {
 
     #[test]
     fn parse() {
-        let strings_and_expectations = [(
-            "3+2",
-            Expr::Binary {
-                left: Box::new(Expr::Number(3.0)),
-                op: BinaryOp::Add,
-                right: Box::new(Expr::Number(2.0)),
-            },
-        )];
+        let strings_and_expectations = [
+            (
+                "3+2",
+                Expr::Binary {
+                    left: Box::new(Expr::Number(3.0)),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(2.0)),
+                },
+            ),
+            (
+                "4*5+5/6",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Number(4.0)),
+                        op: BinaryOp::Mull,
+                        right: Box::new(Expr::Number(5.0)),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Number(5.0)),
+                        op: BinaryOp::Div,
+                        right: Box::new(Expr::Number(6.0)),
+                    }),
+                },
+            ),
+        ];
 
         for (string, expect) in strings_and_expectations {
             let tokens = ExpressionTokenizer::from(string.to_string())
