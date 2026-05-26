@@ -27,7 +27,7 @@ pub enum OperatorType {
 }
 
 impl ExpressionTokenizer {
-    //Create valid regex string
+    /// Create valid regex string
     fn create_regex_string() -> String {
         let regex_arr = [
             r"(?P<left_bracket>\()",
@@ -50,7 +50,7 @@ impl ExpressionTokenizer {
             .map(|matched_str| Token::from(matched_str.as_str()))
     }
 
-    // Create new instance
+    /// Create new instance
     pub fn from(expression: String) -> Self {
         let regex = Regex::new(&Self::create_regex_string()).unwrap();
         Self { expression, regex }
