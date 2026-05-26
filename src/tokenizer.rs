@@ -7,7 +7,7 @@ pub struct ExpressionTokenizer {
     regex: Regex,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     LeftBracket,
     RightBracket,
@@ -17,7 +17,7 @@ pub enum Token {
     Other,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum OperatorType {
     Add,
     Sub,
@@ -27,12 +27,6 @@ pub enum OperatorType {
 }
 
 impl ExpressionTokenizer {
-    // Create new instance
-    pub fn from(expression: String) -> Self {
-        let regex = Regex::new(&Self::create_regex_string()).unwrap();
-        Self { expression, regex }
-    }
-
     //Create valid regex string
     fn create_regex_string() -> String {
         let regex_arr = [
@@ -54,6 +48,12 @@ impl ExpressionTokenizer {
         self.regex
             .find_iter(&self.expression)
             .map(|matched_str| Token::from(matched_str.as_str()))
+    }
+
+    // Create new instance
+    pub fn from(expression: String) -> Self {
+        let regex = Regex::new(&Self::create_regex_string()).unwrap();
+        Self { expression, regex }
     }
 
     /// Tokenize and return either Ok with valid tokens for parser or an error
