@@ -79,7 +79,9 @@ impl Parser {
         unimplemented!()
     }
 
-    pub fn parse(&mut self) -> Expr {
+    pub fn parse(&mut self) -> Result<Expr, ()> {
+        self.parse_expression(0);
+
         unimplemented!()
     }
 
