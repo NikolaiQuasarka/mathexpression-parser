@@ -51,6 +51,14 @@ impl Parser {
         self.tokens.get(self.index)
     }
 
+    fn consume(&mut self) -> &Token {
+        let index = self.index;
+        self.index += 1;
+        let token = self.tokens.get(index).expect("Token is empty");
+
+        token
+    }
+
     fn parse_expression(&mut self, precedence: u8) -> Result<Expr, ()> {
         self.parse_prefix();
 
@@ -59,14 +67,6 @@ impl Parser {
         }
 
         unimplemented!()
-    }
-
-    fn consume(&mut self) -> &Token {
-        let index = self.index;
-        self.index += 1;
-        let token = self.tokens.get(index).expect("Token is empty");
-
-        token
     }
 
     fn parse_infix(&mut self) -> Result<Expr, ()> {
