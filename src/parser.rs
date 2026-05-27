@@ -52,7 +52,7 @@ impl Parser {
     }
 
     fn parse_expression(&mut self, precedence: u8) -> Result<Expr, ()> {
-        self.parsePrefix();
+        self.parse_prefix();
 
         while precedence < get_precedence(self.get_current_token().expect("Token is empty")) {
             self.parse_infix();
@@ -69,8 +69,11 @@ impl Parser {
         token
     }
 
-    fn parse_infix(&mut self) {
-        let token = self.consume();
+    fn parse_infix(&mut self) -> Result<Expr, ()> {
+        let token = match self.consume() {
+            Token::Operator(operator_type) => todo!(),
+            _ => unimplemented!(),
+        };
 
         let precedence = get_precedence(token);
 
@@ -79,7 +82,11 @@ impl Parser {
         todo!()
     }
 
-    fn parsePrefix(&self) {
+    fn parse_prefix(&mut self) -> Result<Expr, ()> {
+        let token = match self.consume() {
+            Token::Number(number) => unimplemented!(),
+            _ => unimplemented!(),
+        };
         unimplemented!()
     }
 
