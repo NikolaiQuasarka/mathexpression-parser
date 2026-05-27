@@ -51,12 +51,14 @@ impl Parser {
         self.tokens.get(self.index)
     }
 
-    fn parse_expression(&mut self, precedence: u8) {
+    fn parse_expression(&mut self, precedence: u8) -> Result<Expr, ()> {
         self.parsePrefix();
 
         while precedence < get_precedence(self.get_current_token().expect("Token is empty")) {
             self.parse_infix();
         }
+
+        unimplemented!()
     }
 
     fn consume(&mut self) -> Token {
@@ -80,9 +82,7 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Expr, ()> {
-        self.parse_expression(0);
-
-        unimplemented!()
+        self.parse_expression(0)
     }
 
     pub fn new(tokens: Vec<Token>) -> Self {
@@ -132,7 +132,7 @@ mod tests {
 
             let mut parser = Parser::new(tokens);
 
-            assert_eq!(parser.parse(), expect)
+            assert_eq!(parser.parse().unwrap(), expect)
         }
     }
 }
