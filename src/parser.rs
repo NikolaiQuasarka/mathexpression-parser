@@ -61,18 +61,20 @@ impl Parser {
         unimplemented!()
     }
 
-    fn consume(&mut self) -> Token {
+    fn consume(&mut self) -> &Token {
         let index = self.index;
         self.index += 1;
         let token = self.tokens.get(index).expect("Token is empty");
 
-        token.clone()
+        token
     }
 
     fn parse_infix(&mut self) {
         let token = self.consume();
 
-        self.parse_expression(get_precedence(&token));
+        let precedence = get_precedence(token);
+
+        self.parse_expression(precedence);
 
         todo!()
     }
