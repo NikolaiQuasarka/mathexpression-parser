@@ -9,7 +9,7 @@ pub struct ExpressionTokenizer {
     regex: Regex,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     LeftBracket,
     RightBracket,

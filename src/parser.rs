@@ -60,19 +60,33 @@ impl Parser {
     }
 
     fn parse_expression(&mut self, precedence: u8) -> Result<Expr, ()> {
-        self.parse_prefix();
+        let prefix = self.parse_prefix()?;
+
+        let mut expr = prefix;
 
         while precedence < get_precedence(self.get_current_token().expect("Token is empty")) {
-            self.parse_infix();
+            let infix = self.parse_infix()?;
+
+            let Token::Operator(operator) = infix.clone() else {
+                return Err(());
+            };
+
+            let right = self.parse_expression(get_precedence(&infix))?;
+
+            expr = Expr::Binary {
+                left: Box::new(expr),
+                op: operator,
+                right: Box::new(right),
+            }
         }
 
-        unimplemented!()
+        Ok(expr)
     }
 
-    fn parse_infix(&mut self) -> Result<Expr, ()> {
+    fn parse_infix(&mut self) -> Result<Token, ()> {
         let token = match self.consume() {
-            Token::Operator(operator_type) => todo!(),
-            _ => unimplemented!(),
+            token @ Token::Operator(_) => token,
+            _ => return Err(()),
         };
 
         let precedence = get_precedence(token);
