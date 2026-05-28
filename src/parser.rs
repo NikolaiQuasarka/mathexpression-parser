@@ -71,7 +71,9 @@ impl Parser {
                 return Err(());
             };
 
-            let right = self.parse_expression(get_precedence(&infix))?;
+            let precedence = get_precedence(infix);
+
+            let right = self.parse_expression(precedence)?;
 
             expr = Expr::Binary {
                 left: Box::new(expr),
@@ -83,17 +85,13 @@ impl Parser {
         Ok(expr)
     }
 
-    fn parse_infix(&mut self) -> Result<Token, ()> {
+    fn parse_infix(&mut self) -> Result<&Token, ()> {
         let token = match self.consume() {
             token @ Token::Operator(_) => token,
             _ => return Err(()),
         };
 
-        let precedence = get_precedence(token);
-
-        self.parse_expression(precedence);
-
-        todo!()
+        Ok(token)
     }
 
     fn parse_prefix(&mut self) -> Result<Expr, ()> {
