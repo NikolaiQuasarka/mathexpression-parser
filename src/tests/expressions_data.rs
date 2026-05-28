@@ -230,5 +230,39 @@ pub fn create_data_set() -> Vec<(&'static str, Expr, f64)> {
             },
             50.0,
         ),
+        (
+            "2^3",
+            Expr::Binary {
+                left: Box::new(Expr::Number(2.0)),
+                op: BinaryOp::Pow,
+                right: Box::new(Expr::Number(3.0)),
+            },
+            8.0,
+        ),
+        (
+            "4+5^9*3-3^2",
+            Expr::Binary {
+                left: Box::new(Expr::Number(4.0)),
+                op: BinaryOp::Add,
+                right: Box::new(Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Number(5.0)),
+                            op: BinaryOp::Pow,
+                            right: Box::new(Expr::Number(9.0)),
+                        }),
+                        op: BinaryOp::Mul,
+                        right: Box::new(Expr::Number(3.0)),
+                    }),
+                    op: BinaryOp::Sub,
+                    right: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Number(3.0)),
+                        op: BinaryOp::Pow,
+                        right: Box::new(Expr::Number(2.0)),
+                    }),
+                }),
+            },
+            5_859_370.0,
+        ),
     ]
 }
