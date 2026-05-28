@@ -99,12 +99,27 @@ impl Parser {
     }
 
     fn parse_prefix(&mut self) -> Result<Expr, ()> {
-        let token = match self.consume() {
+        let token = match self.get_current_token().ok_or(())? {
             Token::Number(number) => Expr::Number(*number),
+            Token::LeftBracket => self.parse_parenthesized_expression()?,
             _ => return Err(()),
         };
 
         Ok(token)
+    }
+
+    fn parse_parenthesized_expression(&mut self) -> Result<Expr, ()> {
+        if let Token::LeftBracket = self.consume() {
+            return Err(());
+        }
+
+        let expression = self.parse_expression(0);
+
+        if let Token::RightBracket = self.consume() {
+            return Err(());
+        }
+
+        expression
     }
 
     pub fn parse(&mut self) -> Result<Expr, ()> {

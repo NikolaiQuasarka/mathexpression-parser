@@ -13,8 +13,8 @@ pub fn calculate(expression: Expr) -> f64 {
             result
         }
         Expr::Binary { left, op, right } => {
-            let left = calculate(*left);
-            let right = calculate(*right);
+            let left = calculate_expr(*left);
+            let right = calculate_expr(*right);
 
             match op {
                 BinaryOp::Add => left + right,
