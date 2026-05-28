@@ -64,21 +64,25 @@ impl Parser {
 
         let mut expr = prefix;
 
-        while precedence < get_precedence(self.get_current_token().expect("Token is empty")) {
-            let infix = self.parse_infix()?;
+        while let Some(token) = self.get_current_token() {
+            let precedence = get_precedence(token);
 
-            let Token::Operator(operator) = infix.clone() else {
-                return Err(());
-            };
+            while precedence < precedence {
+                let infix = self.parse_infix()?;
 
-            let precedence = get_precedence(infix);
+                let Token::Operator(operator) = infix.clone() else {
+                    return Err(());
+                };
 
-            let right = self.parse_expression(precedence)?;
+                let precedence = get_precedence(infix);
 
-            expr = Expr::Binary {
-                left: Box::new(expr),
-                op: operator,
-                right: Box::new(right),
+                let right = self.parse_expression(precedence)?;
+
+                expr = Expr::Binary {
+                    left: Box::new(expr),
+                    op: operator,
+                    right: Box::new(right),
+                }
             }
         }
 
@@ -130,7 +134,19 @@ mod tests {
                 },
             ),
             (
-                "4*5+5/6",
+                "7-3+2",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Number(7.0)),
+                        op: BinaryOp::Sub,
+                        right: Box::new(Expr::Number(3.0)),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(2.0)),
+                },
+            ),
+            (
+                "4*5+6/2",
                 Expr::Binary {
                     left: Box::new(Expr::Binary {
                         left: Box::new(Expr::Number(4.0)),
@@ -139,10 +155,194 @@ mod tests {
                     }),
                     op: BinaryOp::Add,
                     right: Box::new(Expr::Binary {
-                        left: Box::new(Expr::Number(5.0)),
+                        left: Box::new(Expr::Number(6.0)),
                         op: BinaryOp::Div,
-                        right: Box::new(Expr::Number(6.0)),
+                        right: Box::new(Expr::Number(2.0)),
                     }),
+                },
+            ),
+            (
+                "10+5-3*2/4",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Number(10.0)),
+                        op: BinaryOp::Add,
+                        right: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Number(5.0)),
+                            op: BinaryOp::Sub,
+                            right: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Number(3.0)),
+                                    op: BinaryOp::Mul,
+                                    right: Box::new(Expr::Number(2.0)),
+                                }),
+                                op: BinaryOp::Div,
+                                right: Box::new(Expr::Number(4.0)),
+                            }),
+                        }),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(0.0)),
+                },
+            ),
+            (
+                "8*3+2-5/1+4",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Number(8.0)),
+                                    op: BinaryOp::Mul,
+                                    right: Box::new(Expr::Number(3.0)),
+                                }),
+                                op: BinaryOp::Add,
+                                right: Box::new(Expr::Number(2.0)),
+                            }),
+                            op: BinaryOp::Sub,
+                            right: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Number(5.0)),
+                                op: BinaryOp::Div,
+                                right: Box::new(Expr::Number(1.0)),
+                            }),
+                        }),
+                        op: BinaryOp::Add,
+                        right: Box::new(Expr::Number(4.0)),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(0.0)),
+                },
+            ),
+            (
+                "2+3*4-5/6+7*8-9",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Binary {
+                                        left: Box::new(Expr::Number(2.0)),
+                                        op: BinaryOp::Add,
+                                        right: Box::new(Expr::Binary {
+                                            left: Box::new(Expr::Number(3.0)),
+                                            op: BinaryOp::Mul,
+                                            right: Box::new(Expr::Number(4.0)),
+                                        }),
+                                    }),
+                                    op: BinaryOp::Sub,
+                                    right: Box::new(Expr::Binary {
+                                        left: Box::new(Expr::Number(5.0)),
+                                        op: BinaryOp::Div,
+                                        right: Box::new(Expr::Number(6.0)),
+                                    }),
+                                }),
+                                op: BinaryOp::Add,
+                                right: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Number(7.0)),
+                                    op: BinaryOp::Mul,
+                                    right: Box::new(Expr::Number(8.0)),
+                                }),
+                            }),
+                            op: BinaryOp::Sub,
+                            right: Box::new(Expr::Number(9.0)),
+                        }),
+                        op: BinaryOp::Add,
+                        right: Box::new(Expr::Number(0.0)),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(0.0)),
+                },
+            ),
+            (
+                "1+2*3+4*5+6*7+8*9",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Number(1.0)),
+                                    op: BinaryOp::Add,
+                                    right: Box::new(Expr::Binary {
+                                        left: Box::new(Expr::Number(2.0)),
+                                        op: BinaryOp::Mul,
+                                        right: Box::new(Expr::Number(3.0)),
+                                    }),
+                                }),
+                                op: BinaryOp::Add,
+                                right: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Number(4.0)),
+                                    op: BinaryOp::Mul,
+                                    right: Box::new(Expr::Number(5.0)),
+                                }),
+                            }),
+                            op: BinaryOp::Add,
+                            right: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Number(6.0)),
+                                op: BinaryOp::Mul,
+                                right: Box::new(Expr::Number(7.0)),
+                            }),
+                        }),
+                        op: BinaryOp::Add,
+                        right: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Number(8.0)),
+                            op: BinaryOp::Mul,
+                            right: Box::new(Expr::Number(9.0)),
+                        }),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(0.0)),
+                },
+            ),
+            (
+                "10-2*3+4/2-5+6*7-8/4+9",
+                Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(Expr::Binary {
+                            left: Box::new(Expr::Binary {
+                                left: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Binary {
+                                        left: Box::new(Expr::Binary {
+                                            left: Box::new(Expr::Binary {
+                                                left: Box::new(Expr::Number(10.0)),
+                                                op: BinaryOp::Sub,
+                                                right: Box::new(Expr::Binary {
+                                                    left: Box::new(Expr::Number(2.0)),
+                                                    op: BinaryOp::Mul,
+                                                    right: Box::new(Expr::Number(3.0)),
+                                                }),
+                                            }),
+                                            op: BinaryOp::Add,
+                                            right: Box::new(Expr::Binary {
+                                                left: Box::new(Expr::Number(4.0)),
+                                                op: BinaryOp::Div,
+                                                right: Box::new(Expr::Number(2.0)),
+                                            }),
+                                        }),
+                                        op: BinaryOp::Sub,
+                                        right: Box::new(Expr::Number(5.0)),
+                                    }),
+                                    op: BinaryOp::Add,
+                                    right: Box::new(Expr::Binary {
+                                        left: Box::new(Expr::Number(6.0)),
+                                        op: BinaryOp::Mul,
+                                        right: Box::new(Expr::Number(7.0)),
+                                    }),
+                                }),
+                                op: BinaryOp::Sub,
+                                right: Box::new(Expr::Binary {
+                                    left: Box::new(Expr::Number(8.0)),
+                                    op: BinaryOp::Div,
+                                    right: Box::new(Expr::Number(4.0)),
+                                }),
+                            }),
+                            op: BinaryOp::Add,
+                            right: Box::new(Expr::Number(9.0)),
+                        }),
+                        op: BinaryOp::Add,
+                        right: Box::new(Expr::Number(0.0)),
+                    }),
+                    op: BinaryOp::Add,
+                    right: Box::new(Expr::Number(0.0)),
                 },
             ),
         ];
