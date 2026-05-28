@@ -1,7 +1,7 @@
 use crate::tokenizer::Token;
 
 #[derive(Debug, PartialEq)]
-enum Expr {
+pub enum Expr {
     Number(f64),
     Unary {
         op: UnaryOp,
@@ -23,7 +23,7 @@ pub enum BinaryOp {
     Pow,
 }
 #[derive(Debug, PartialEq)]
-enum UnaryOp {
+pub enum UnaryOp {
     Plus,
     Neg,
 }
