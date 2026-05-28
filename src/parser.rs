@@ -96,10 +96,11 @@ impl Parser {
 
     fn parse_prefix(&mut self) -> Result<Expr, ()> {
         let token = match self.consume() {
-            Token::Number(number) => unimplemented!(),
-            _ => unimplemented!(),
+            Token::Number(number) => Expr::Number(*number),
+            _ => return Err(()),
         };
-        unimplemented!()
+
+        Ok(token)
     }
 
     pub fn parse(&mut self) -> Result<Expr, ()> {
