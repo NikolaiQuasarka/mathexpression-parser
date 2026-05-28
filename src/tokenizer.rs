@@ -19,15 +19,6 @@ pub enum Token {
     Other,
 }
 
-#[derive(Debug, PartialEq)]
-pub enum OperatorType {
-    Add,
-    Sub,
-    Mul,
-    Div,
-    Pow,
-}
-
 impl ExpressionTokenizer {
     /// Create valid regex string
     fn create_regex_string() -> String {
