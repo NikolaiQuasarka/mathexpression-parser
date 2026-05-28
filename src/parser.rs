@@ -1,17 +1,4 @@
-use crate::tokenizer::{OperatorType, Token};
-
-fn get_precedence(token: &Token) -> u8 {
-    match token {
-        Token::Operator(operator) => match operator {
-            OperatorType::Add => 1,
-            OperatorType::Sub => 1,
-            OperatorType::Mul => 2,
-            OperatorType::Div => 2,
-            OperatorType::Pow => 3,
-        },
-        _ => 0,
-    }
-}
+use crate::tokenizer::Token;
 
 #[derive(Debug, PartialEq)]
 enum Expr {
@@ -44,6 +31,19 @@ enum UnaryOp {
 struct Parser {
     tokens: Vec<Token>,
     index: usize,
+}
+
+fn get_precedence(token: &Token) -> u8 {
+    match token {
+        Token::Operator(operator) => match operator {
+            BinaryOp::Add => 1,
+            BinaryOp::Sub => 1,
+            BinaryOp::Mul => 2,
+            BinaryOp::Div => 2,
+            BinaryOp::Pow => 3,
+        },
+        _ => 0,
+    }
 }
 
 impl Parser {
