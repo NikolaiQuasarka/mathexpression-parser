@@ -47,7 +47,7 @@ fn get_precedence(token: &Token) -> u8 {
 }
 
 impl Parser {
-    fn get_current_token<'a>(&self) -> Option<&Token> {
+    fn get_current_token(&self) -> Option<&Token> {
         self.tokens.get(self.index)
     }
 
