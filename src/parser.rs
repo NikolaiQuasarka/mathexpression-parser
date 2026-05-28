@@ -28,7 +28,7 @@ pub enum UnaryOp {
     Neg,
 }
 
-struct Parser {
+pub struct Parser {
     tokens: Vec<Token>,
     index: usize,
 }

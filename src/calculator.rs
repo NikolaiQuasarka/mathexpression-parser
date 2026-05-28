@@ -1,10 +1,23 @@
-use crate::parser::{BinaryOp, Expr, UnaryOp};
+use crate::{
+    parser::{BinaryOp, Expr, Parser, UnaryOp},
+    tokenizer::ExpressionTokenizer,
+};
 
-pub fn calculate(expression: Expr) -> f64 {
+pub fn calculate(str: String) -> Result<f64, ()> {
+    let tokens = ExpressionTokenizer::from(str).tokenize_with_check()?;
+
+    let expr = Parser::new(tokens).parse()?;
+
+    let result = calculate_expr(expr);
+
+    Ok(result)
+}
+
+pub fn calculate_expr(expression: Expr) -> f64 {
     let result = match expression {
         Expr::Number(number) => number,
         Expr::Unary { op, right } => {
-            let result = calculate(*right);
+            let result = calculate_expr(*right);
 
             if let UnaryOp::Neg = op {
                 return -result;
@@ -40,7 +53,7 @@ mod tests {
         let data = create_data_set();
 
         for (_, expr, result) in data {
-            assert_eq!(calculate(expr), result);
+            assert_eq!(calculate_expr(expr), result);
         }
     }
 }
