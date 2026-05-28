@@ -1,5 +1,7 @@
 use regex::Regex;
 
+use crate::parser::BinaryOp;
+
 pub struct ExpressionTokenizer {
     /// Store expression string
     expression: String,
@@ -12,7 +14,7 @@ pub enum Token {
     LeftBracket,
     RightBracket,
     Delimiter,
-    Operator(OperatorType),
+    Operator(BinaryOp),
     Number(f64),
     Other,
 }
@@ -75,11 +77,11 @@ impl Token {
             ")" => Self::RightBracket,
             "," => Self::Delimiter,
             operator @ ("+" | "-" | "/" | "*" | "^") => Self::Operator(match operator {
-                "+" => OperatorType::Add,
-                "-" => OperatorType::Sub,
-                "/" => OperatorType::Div,
-                "*" => OperatorType::Mul,
-                "^" => OperatorType::Pow,
+                "+" => BinaryOp::Add,
+                "-" => BinaryOp::Sub,
+                "/" => BinaryOp::Div,
+                "*" => BinaryOp::Mul,
+                "^" => BinaryOp::Pow,
                 _ => unreachable!(),
             }),
 
@@ -111,9 +113,9 @@ mod tests {
             "3+3*(83)",
             [
                 Token::Number(3.0),
-                Token::Operator(OperatorType::Add),
+                Token::Operator(BinaryOp::Add),
                 Token::Number(3.0),
-                Token::Operator(OperatorType::Mul),
+                Token::Operator(BinaryOp::Mul),
                 Token::LeftBracket,
                 Token::Number(83.0),
                 Token::RightBracket,
@@ -129,12 +131,12 @@ mod tests {
     #[test]
     fn token_from() {
         let strings_and_expected_tokens = [
-            ("+", Token::Operator(OperatorType::Add)),
-            ("+", Token::Operator(OperatorType::Add)),
-            ("-", Token::Operator(OperatorType::Sub)),
-            ("/", Token::Operator(OperatorType::Div)),
-            ("*", Token::Operator(OperatorType::Mul)),
-            ("^", Token::Operator(OperatorType::Pow)),
+            ("+", Token::Operator(BinaryOp::Add)),
+            ("+", Token::Operator(BinaryOp::Add)),
+            ("-", Token::Operator(BinaryOp::Sub)),
+            ("/", Token::Operator(BinaryOp::Div)),
+            ("*", Token::Operator(BinaryOp::Mul)),
+            ("^", Token::Operator(BinaryOp::Pow)),
             (",", Token::Delimiter),
             ("(", Token::LeftBracket),
             (")", Token::RightBracket),

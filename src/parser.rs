@@ -27,11 +27,11 @@ enum Expr {
     },
 }
 
-#[derive(Debug, PartialEq)]
-enum BinaryOp {
+#[derive(Debug, PartialEq, Clone)]
+pub enum BinaryOp {
     Add,
     Sub,
-    Mull,
+    Mul,
     Div,
     Pow,
 }
@@ -121,7 +121,7 @@ mod tests {
                 Expr::Binary {
                     left: Box::new(Expr::Binary {
                         left: Box::new(Expr::Number(4.0)),
-                        op: BinaryOp::Mull,
+                        op: BinaryOp::Mul,
                         right: Box::new(Expr::Number(5.0)),
                     }),
                     op: BinaryOp::Add,
