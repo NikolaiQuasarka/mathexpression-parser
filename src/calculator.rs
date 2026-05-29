@@ -52,6 +52,15 @@ mod tests {
     fn calculate_test() {
         let data = create_data_set();
 
+        for (str, _, result) in data {
+            assert_eq!(calculate(str.to_string()).unwrap(), result)
+        }
+    }
+
+    #[test]
+    fn calculate_expr_test() {
+        let data = create_data_set();
+
         for (_, expr, result) in data {
             assert_eq!(calculate_expr(expr), result);
         }
