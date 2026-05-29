@@ -67,7 +67,6 @@ impl Parser {
         while let Some(token) = self.get_current_token()
             && precedence < get_precedence(token)
         {
-            //TODO: Поменяй токену заканчиваются. Верхняя строчка должна следить за этим. Нужно изменить while
             let infix = self.parse_infix()?;
 
             let Token::Operator(operator) = infix.clone() else {
@@ -112,15 +111,15 @@ impl Parser {
     }
 
     fn parse_parenthesized_expression(&mut self) -> Result<Expr, ()> {
-        if let Token::LeftBracket = self.consume() {
+        let Token::LeftBracket = self.consume() else {
             return Err(());
-        }
+        };
 
         let expression = self.parse_expression(0);
 
-        if let Token::RightBracket = self.consume() {
+        let Token::RightBracket = self.consume() else {
             return Err(());
-        }
+        };
 
         expression
     }
