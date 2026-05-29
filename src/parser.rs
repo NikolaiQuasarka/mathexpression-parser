@@ -64,25 +64,24 @@ impl Parser {
 
         let mut expr = prefix;
 
-        while let Some(token) = self.get_current_token() {
-            let precedence = get_precedence(token);
+        while let Some(token) = self.get_current_token()
+            && precedence < get_precedence(token)
+        {
+            //TODO: Поменяй токену заканчиваются. Верхняя строчка должна следить за этим. Нужно изменить while
+            let infix = self.parse_infix()?;
 
-            while precedence < precedence {
-                let infix = self.parse_infix()?;
+            let Token::Operator(operator) = infix.clone() else {
+                return Err(());
+            };
 
-                let Token::Operator(operator) = infix.clone() else {
-                    return Err(());
-                };
+            let precedence = get_precedence(infix);
 
-                let precedence = get_precedence(infix);
+            let right = self.parse_expression(precedence)?;
 
-                let right = self.parse_expression(precedence)?;
-
-                expr = Expr::Binary {
-                    left: Box::new(expr),
-                    op: operator,
-                    right: Box::new(right),
-                }
+            expr = Expr::Binary {
+                left: Box::new(expr),
+                op: operator,
+                right: Box::new(right),
             }
         }
 
@@ -100,7 +99,11 @@ impl Parser {
 
     fn parse_prefix(&mut self) -> Result<Expr, ()> {
         let token = match self.get_current_token().ok_or(())? {
-            Token::Number(number) => Expr::Number(*number),
+            Token::Number(number) => {
+                let number = *number;
+                self.consume();
+                Expr::Number(number)
+            }
             Token::LeftBracket => self.parse_parenthesized_expression()?,
             _ => return Err(()),
         };
