@@ -76,6 +76,19 @@ pub fn create_data_set() -> Vec<(&'static str, Expr, f64)> {
             5_859_370.0,
         ),
         (
+            "4^3^2",
+            Expr::Binary {
+                left: Box::new(Expr::Number(4.0)),
+                op: BinaryOp::Pow,
+                right: Box::new(Expr::Binary {
+                    left: Box::new(Expr::Number(3.0)),
+                    op: BinaryOp::Pow,
+                    right: Box::new(Expr::Number(2.0)),
+                }),
+            },
+            262144.0,
+        ),
+        (
             "3*(2+3)",
             Expr::Binary {
                 left: Box::new(Expr::Number(3.0)),

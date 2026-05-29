@@ -92,8 +92,11 @@ impl Parser {
 
         let precedence = get_precedence(&token);
 
-        let expr = match token {
-            Token::Operator(_) => self.parse_expression(precedence),
+        let expr = match &token {
+            Token::Operator(operator) => match operator {
+                BinaryOp::Pow => self.parse_expression(precedence - 1),
+                _ => self.parse_expression(precedence),
+            },
             _ => return Err(()),
         }?;
 
