@@ -73,10 +73,6 @@ impl Parser {
                 return Err(());
             };
 
-            // let precedence = get_precedence(infix);
-
-            // let right = self.parse_expression(precedence)?;
-
             expr = Expr::Binary {
                 left: Box::new(expr),
                 op: operator,
