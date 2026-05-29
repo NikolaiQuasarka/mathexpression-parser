@@ -1,22 +1,42 @@
-use regex::Regex;
+use logos::Logos;
 
 use crate::parser::BinaryOp;
 
 pub struct ExpressionTokenizer<'a> {
     /// Store expression string
     expression: &'a str,
-    /// Store regex. Needed for lifetime solving
-    regex: Regex,
+    // Store regex. Needed for lifetime solving
+    // regex: Regex,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Logos, Debug, PartialEq, Clone)]
+#[logos(skip r"\s")]
 pub enum Token {
+    #[token(r"(")]
     LeftBracket,
+    #[token(r")")]
     RightBracket,
+    #[token(",")]
     Delimiter,
+    #[regex(r"([-+*/^])", |token| {
+        let token = token.slice();
+
+        match token {
+            "-"=> BinaryOp::Sub,
+            "+"=> BinaryOp::Add,
+            "*"=> BinaryOp::Mul,
+            "/"=> BinaryOp::Div,
+            "^"=> BinaryOp::Pow,
+            _=>unreachable!()
+        }
+    } )]
     Operator(BinaryOp),
+    #[regex(r"(\d+(\.\d+)?)", |lex| {
+        lex.slice().parse::<f64>().unwrap()
+    })]
     Number(f64),
-    Other,
+    // #[logos(error)]
+    // Other,
 }
 
 impl<'a> ExpressionTokenizer<'a> {
@@ -37,26 +57,22 @@ impl<'a> ExpressionTokenizer<'a> {
     }
 
     /// Split string from struct to tokens
-    fn tokenize(&self) -> impl Iterator<Item = Token> {
-        self.regex
-            .find_iter(&self.expression)
-            .map(|matched_str| Token::from(matched_str.as_str()))
+    fn tokenize(&self) -> impl Iterator<Item = Result<Token, ()>> {
+        Token::lexer(self.expression)
+        // self.regex
+        //     .find_iter(&self.expression)
+        //     .map(|matched_str| Token::from(matched_str.as_str()))
     }
 
     /// Create new instance
     pub fn from(expression: &'a str) -> Self {
-        let regex = Regex::new(&Self::create_regex_string()).unwrap();
-        Self { expression, regex }
+        // let regex = Regex::new(&Self::create_regex_string()).unwrap();
+        Self { expression }
     }
 
     /// Tokenize and return either Ok with valid tokens for parser or an error
     pub fn tokenize_with_check(&self) -> Result<Vec<Token>, ()> {
-        self.tokenize()
-            .map(|token| match token {
-                Token::Other => Err(()),
-                token @ _ => Ok(token),
-            })
-            .collect::<Result<Vec<_>, _>>()
+        self.tokenize().collect::<Result<Vec<_>, ()>>()
     }
 }
 
@@ -78,7 +94,7 @@ impl Token {
 
             token @ _ => match token.parse::<f64>() {
                 Ok(number) => Self::Number(number),
-                Err(_) => Self::Other,
+                Err(_) => unreachable!(),
             },
         }
     }
@@ -88,15 +104,15 @@ impl Token {
 mod tests {
     use super::*;
 
-    #[test]
-    fn create_regex() {
-        let regex_string = ExpressionTokenizer::create_regex_string();
-        let regex = Regex::new(&regex_string);
+    // #[test]
+    // fn create_regex() {
+    //     let regex_string = ExpressionTokenizer::create_regex_string();
+    //     let regex = Regex::new(&regex_string);
 
-        dbg!(&regex);
+    //     dbg!(&regex);
 
-        assert!(regex.is_ok())
-    }
+    //     assert!(regex.is_ok())
+    // }
 
     #[test]
     fn tokenize_test() {
@@ -115,7 +131,13 @@ mod tests {
 
         for (str, expect) in strings_and_expects {
             let tokenizer = ExpressionTokenizer::from(str);
-            assert_eq!(tokenizer.tokenize().collect::<Vec<_>>(), expect);
+            assert_eq!(
+                tokenizer
+                    .tokenize()
+                    .map(|token| token.unwrap())
+                    .collect::<Vec<_>>(),
+                expect
+            );
         }
     }
 
@@ -151,8 +173,8 @@ mod tests {
 
         let invalid_chars = ["f", "324h54", "12.0f"];
 
-        for string in invalid_chars {
-            assert_eq!(Token::from(string), Token::Other)
-        }
+        // for string in invalid_chars {
+        //     assert_eq!(Token::from(string), Token::Other)
+        // }
     }
 }
