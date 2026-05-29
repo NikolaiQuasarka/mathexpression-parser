@@ -23,12 +23,12 @@ impl ExpressionTokenizer {
     /// Create valid regex string
     fn create_regex_string() -> String {
         let regex_arr = [
-            r"(?P<left_bracket>\()",
-            r"(?P<right_bracket>\))",
-            r"(?P<delimiter>,)",
-            r"(?P<operator>[-+*/^])",
-            r"(?P<number>\d+(\.\d+)?)",
-            r"(?P<unknown>\S)",
+            r"(\()",
+            r"(\))",
+            r"(,)",
+            r"([-+*/^])",
+            r"(\d+(\.\d+)?)",
+            r"(\S)",
         ];
 
         let regex = regex_arr.join("|");
