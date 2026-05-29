@@ -1,5 +1,7 @@
-pub mod calculator;
-pub mod parser;
+pub(crate) mod calculator;
+pub(crate) mod parser;
 #[cfg(test)]
 pub(crate) mod tests;
-pub mod tokenizer;
+pub(crate) mod tokenizer;
+
+pub use calculator::calculate;

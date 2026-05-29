@@ -13,7 +13,7 @@ pub fn calculate(str: &str) -> Result<f64, ()> {
     Ok(result)
 }
 
-pub fn calculate_expr(expression: Expr) -> f64 {
+fn calculate_expr(expression: Expr) -> f64 {
     let result = match expression {
         Expr::Number(number) => number,
         Expr::Unary { op, right } => {

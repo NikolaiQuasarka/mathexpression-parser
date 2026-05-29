@@ -1,6 +1,6 @@
 use std::{env::args, process::exit};
 
-use mathexpression_parser::calculator::calculate;
+use mathexpression_parser::calculate;
 
 fn main() {
     app()
