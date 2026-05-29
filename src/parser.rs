@@ -67,33 +67,37 @@ impl Parser {
         while let Some(token) = self.get_current_token()
             && precedence < get_precedence(token)
         {
-            let infix = self.parse_infix()?;
+            let (token, infix_expr) = self.parse_infix()?;
 
-            let Token::Operator(operator) = infix.clone() else {
+            let Token::Operator(operator) = token.clone() else {
                 return Err(());
             };
 
-            let precedence = get_precedence(infix);
+            // let precedence = get_precedence(infix);
 
-            let right = self.parse_expression(precedence)?;
+            // let right = self.parse_expression(precedence)?;
 
             expr = Expr::Binary {
                 left: Box::new(expr),
                 op: operator,
-                right: Box::new(right),
+                right: Box::new(infix_expr),
             }
         }
 
         Ok(expr)
     }
 
-    fn parse_infix(&mut self) -> Result<&Token, ()> {
-        let token = match self.consume() {
-            token @ Token::Operator(_) => token,
-            _ => return Err(()),
-        };
+    fn parse_infix(&mut self) -> Result<(Token, Expr), ()> {
+        let token = self.consume().clone();
 
-        Ok(token)
+        let precedence = get_precedence(&token);
+
+        let expr = match token {
+            Token::Operator(_) => self.parse_expression(precedence),
+            _ => return Err(()),
+        }?;
+
+        Ok((token, expr))
     }
 
     fn parse_prefix(&mut self) -> Result<Expr, ()> {
