@@ -69,7 +69,7 @@ impl Parser {
         {
             let (token, infix_expr) = self.parse_infix()?;
 
-            let Token::Operator(operator) = token.clone() else {
+            let Token::Operator(operator) = token else {
                 return Err(());
             };
 
