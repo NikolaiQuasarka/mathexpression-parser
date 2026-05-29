@@ -98,17 +98,21 @@ impl Parser {
 
     fn parse_prefix(&mut self) -> Result<Expr, ()> {
         let token = match self.get_current_token().ok_or(())? {
-            Token::Number(number) => {
-                let number = *number;
-                self.consume();
-                Expr::Number(number)
-            }
-            Token::LeftBracket => self.parse_parenthesized_expression()?,
-            Token::Operator(_) => self.parse_unary_expression()?,
+            Token::Number(_) => self.parse_number(),
+            Token::LeftBracket => self.parse_parenthesized_expression(),
+            Token::Operator(_) => self.parse_unary_expression(),
             _ => return Err(()),
-        };
+        }?;
 
         Ok(token)
+    }
+
+    fn parse_number(&mut self) -> Result<Expr, ()> {
+        let Token::Number(number) = self.consume() else {
+            return Err(());
+        };
+
+        Ok(Expr::Number(*number))
     }
 
     fn parse_unary_expression(&mut self) -> Result<Expr, ()> {
@@ -118,11 +122,7 @@ impl Parser {
                     let token = self.get_current_token().ok_or(())?;
                     let expr = match token {
                         Token::LeftBracket => self.parse_parenthesized_expression(),
-                        Token::Number(number) => {
-                            let number = *number;
-                            self.consume();
-                            Ok(Expr::Number(number))
-                        }
+                        Token::Number(_) => self.parse_number(),
                         _ => return Err(()),
                     }?;
 
@@ -132,11 +132,7 @@ impl Parser {
                     let token = self.get_current_token().ok_or(())?;
                     let expr = match token {
                         Token::LeftBracket => self.parse_parenthesized_expression(),
-                        Token::Number(number) => {
-                            let number = *number;
-                            self.consume();
-                            Ok(Expr::Number(number))
-                        }
+                        Token::Number(_) => self.parse_number(),
                         _ => return Err(()),
                     }?;
 
