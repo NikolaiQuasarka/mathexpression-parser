@@ -183,8 +183,8 @@ mod tests {
     fn parse() {
         let data = create_data_set();
 
-        for (string, expect, _) in data {
-            let tokens = ExpressionTokenizer::from(string.to_string())
+        for (str, expect, _) in data {
+            let tokens = ExpressionTokenizer::from(str)
                 .tokenize_with_check()
                 .unwrap();
 

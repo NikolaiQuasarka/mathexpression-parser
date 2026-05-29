@@ -3,7 +3,7 @@ use crate::{
     tokenizer::ExpressionTokenizer,
 };
 
-pub fn calculate(str: String) -> Result<f64, ()> {
+pub fn calculate(str: &str) -> Result<f64, ()> {
     let tokens = ExpressionTokenizer::from(str).tokenize_with_check()?;
 
     let expr = Parser::new(tokens).parse()?;
@@ -53,7 +53,7 @@ mod tests {
         let data = create_data_set();
 
         for (str, _, result) in data {
-            assert_eq!(calculate(str.to_string()).unwrap(), result)
+            assert_eq!(calculate(str).unwrap(), result)
         }
     }
 

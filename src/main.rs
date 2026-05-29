@@ -12,7 +12,7 @@ fn app() {
         exit(1)
     });
 
-    match calculate(input) {
+    match calculate(&input) {
         Ok(result) => {
             println!("{result}")
         }

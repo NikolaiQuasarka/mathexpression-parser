@@ -2,9 +2,9 @@ use regex::Regex;
 
 use crate::parser::BinaryOp;
 
-pub struct ExpressionTokenizer {
+pub struct ExpressionTokenizer<'a> {
     /// Store expression string
-    expression: String,
+    expression: &'a str,
     /// Store regex. Needed for lifetime solving
     regex: Regex,
 }
@@ -19,7 +19,7 @@ pub enum Token {
     Other,
 }
 
-impl ExpressionTokenizer {
+impl<'a> ExpressionTokenizer<'a> {
     /// Create valid regex string
     fn create_regex_string() -> String {
         let regex_arr = [
@@ -44,7 +44,7 @@ impl ExpressionTokenizer {
     }
 
     /// Create new instance
-    pub fn from(expression: String) -> Self {
+    pub fn from(expression: &'a str) -> Self {
         let regex = Regex::new(&Self::create_regex_string()).unwrap();
         Self { expression, regex }
     }
@@ -113,8 +113,8 @@ mod tests {
             ],
         )];
 
-        for (string, expect) in strings_and_expects {
-            let tokenizer = ExpressionTokenizer::from(string.to_string());
+        for (str, expect) in strings_and_expects {
+            let tokenizer = ExpressionTokenizer::from(str);
             assert_eq!(tokenizer.tokenize().collect::<Vec<_>>(), expect);
         }
     }
