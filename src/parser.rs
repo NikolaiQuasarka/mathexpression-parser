@@ -104,10 +104,51 @@ impl Parser {
                 Expr::Number(number)
             }
             Token::LeftBracket => self.parse_parenthesized_expression()?,
+            Token::Operator(_) => self.parse_unary_expression()?,
             _ => return Err(()),
         };
 
         Ok(token)
+    }
+
+    fn parse_unary_expression(&mut self) -> Result<Expr, ()> {
+        match self.consume() {
+            Token::Operator(binary_op) => match binary_op {
+                BinaryOp::Add => {
+                    let token = self.get_current_token().ok_or(())?;
+                    let expr = match token {
+                        Token::LeftBracket => self.parse_parenthesized_expression(),
+                        Token::Number(number) => {
+                            let number = *number;
+                            self.consume();
+                            Ok(Expr::Number(number))
+                        }
+                        _ => return Err(()),
+                    }?;
+
+                    Ok(expr)
+                }
+                BinaryOp::Sub => {
+                    let token = self.get_current_token().ok_or(())?;
+                    let expr = match token {
+                        Token::LeftBracket => self.parse_parenthesized_expression(),
+                        Token::Number(number) => {
+                            let number = *number;
+                            self.consume();
+                            Ok(Expr::Number(number))
+                        }
+                        _ => return Err(()),
+                    }?;
+
+                    Ok(Expr::Unary {
+                        op: UnaryOp::Neg,
+                        right: Box::new(expr),
+                    })
+                }
+                _ => return Err(()),
+            },
+            _ => return Err(()),
+        }
     }
 
     fn parse_parenthesized_expression(&mut self) -> Result<Expr, ()> {
