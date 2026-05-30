@@ -33,8 +33,6 @@ pub enum Token {
         lex.slice().parse::<f64>().unwrap()
     })]
     Number(f64),
-    // #[logos(error)]
-    // Other,
 }
 
 impl<'a> ExpressionTokenizer<'a> {
