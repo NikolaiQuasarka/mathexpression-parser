@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub fn calculate(str: &str) -> Result<f64, ()> {
-    let tokens = ExpressionTokenizer::from(str).tokenize_with_check()?;
+    let tokens = ExpressionTokenizer::from(str).tokenize()?;
 
     let expr = Parser::new(tokens).parse()?;
 

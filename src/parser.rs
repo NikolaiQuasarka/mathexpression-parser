@@ -184,9 +184,7 @@ mod tests {
         let data = create_data_set();
 
         for (str, expect, _) in data {
-            let tokens = ExpressionTokenizer::from(str)
-                .tokenize_with_check()
-                .unwrap();
+            let tokens = ExpressionTokenizer::from(str).tokenize().unwrap();
 
             let mut parser = Parser::new(tokens);
 
