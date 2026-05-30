@@ -1,21 +1,18 @@
 ## What is it?
-This is my study project where i build math expressions parser.
+This is my study project where I build a math expressions parser.  
+The crate implements the Pratt algorithm, which is very flexible and extensible.  
+Development was guided by this [article](https://dronperminov.ru/articles/math-expressions-parsing-in-vanilla-javascript-part-five-pratt-parser).
 
-It includes functionality like parsing math expression to AST:
+The crate includes functionality for parsing math expressions to an AST:  
 
-```3*(4/4.54)-34```
+`3*(4/4.54)-34`  
 
-Also it includes calculator to get result of calculating the expression:
+...and a calculator to get the result of evaluating the expression.
 
-Example:
-
-```Rust
-let caltulation_result = expression.calculate();
+### Example:
+```rust
+let calculation_result: f64 = calculate("23.34^3/3*(3-4)").unwrap();
 ```
 
-I plan this crate to be used as library and binary. 
-
-With a binary you can enter an interactive mod, write expressions and get a result or pass an argument to the binary and get result as an output.
-
-## IMPORTANT!
-The crate is in development, so not all features are realesed.
+I plan to use this crate as both a library and a binary.  
+With the binary, you can enter an interactive mode, write expressions and get a result, or pass an argument to the binary and get the result as output.
